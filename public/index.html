@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find GitHub user's email address</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <style>
+        body {
+            font-size: 1.8em;
+            line-height: 1.9;
+        }
+
+        .error {
+            color: #B33A3A;
+        }
+
+        .submit-loader {
+            display: none;
+        }
+
+        .card {
+            padding: 20px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .card.success {
+            display: block;
+        }
+
+        button {
+            min-width: 134px;
+            text-align: center;
+        }
+        button.is-loading .submit-loader {
+            display: inline-block;
+        }
+        button.is-loading .submit-text {
+            display: none;
+        }
+
+        ul.share-buttons{
+          list-style: none;
+          padding: 0;
+        }
+
+        ul.share-buttons li{
+          display: inline;
+        }
+
+        ul.share-buttons .sr-only {
+          position: absolute;
+          clip: rect(1px 1px 1px 1px);
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 0;
+          border: 0;
+          height: 1px;
+          width: 1px;
+          overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <div class="row">
+            <div class="twelve column" style="margin-top: 50px;">
+                <h1>Recruiter's Delight</h1>
+                <h4>Get any GitHub user's Email Address</h4>
+            </div>
+        </div>
+
+        <hr>
+        <h3>How to?</h3>
+        <div class="row">
+            <div class="one-half column">
+                <h4>Step 1</h4>
+                <p>Get the GitHub <strong>username</strong> from the address bar:</p>
+                <img src="addressbar.png" style="max-width: 90%; width: 388px;">
+                <br>
+                <small>(in this example, <strong>berzniz</strong> is the username)</small>
+            </div>
+            <div class="one-half column">
+                <h4>Step 2</h4>
+                <p>Enter the <strong>username</strong> and hunt the email address:</p>
+                <form>
+                    <input placeholder="GitHub username" style="height: 30px; padding: 5px 15px;">
+                    <br>
+                    <button type="submit">
+                        <div class="submit-loader loading loading--double"></div>
+                        <span class="submit-text">Find Email</span>
+                    </button>
+                    <div class="result error"></div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="result name"></div>
+            <div><a class="result email-link"></a></div>
+        </div>
+
+        <hr>
+        <h3>How does it work?</h3>
+        <p>The emails are part of the public data saved when engineers are updating public code. Some engineers opt-out or do not submit public code. For most, the email address is publicly available.</p>
+
+        <hr>
+        <h3>Share</h3>
+        <ul class="share-buttons">
+          <li><a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Frecruit.now.sh%2F&t=Get%20any%20GitHub%20user's%20Email%20Address" title="Share on Facebook" target="_blank"><img alt="Share on Facebook" src="images/flat_web_icon_set/black/Facebook.png"></a></li>
+          <li><a href="https://twitter.com/intent/tweet?source=https%3A%2F%2Frecruit.now.sh%2F&text=Get%20any%20GitHub%20user's%20Email%20Address:%20https%3A%2F%2Frecruit.now.sh%2F&via=ketacode" target="_blank" title="Tweet"><img alt="Tweet" src="images/flat_web_icon_set/black/Twitter.png"></a></li>
+          <li><a href="https://getpocket.com/save?url=https%3A%2F%2Frecruit.now.sh%2F&title=Get%20any%20GitHub%20user's%20Email%20Address" target="_blank" title="Add to Pocket"><img alt="Add to Pocket" src="images/flat_web_icon_set/black/Pocket.png"></a></li>
+          <li><a href="http://www.reddit.com/submit?url=https%3A%2F%2Frecruit.now.sh%2F&title=Get%20any%20GitHub%20user's%20Email%20Address" target="_blank" title="Submit to Reddit"><img alt="Submit to Reddit" src="images/flat_web_icon_set/black/Reddit.png"></a></li>
+          <li><a href="http://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Frecruit.now.sh%2F&title=Get%20any%20GitHub%20user's%20Email%20Address&summary=&source=https%3A%2F%2Frecruit.now.sh%2F" target="_blank" title="Share on LinkedIn"><img alt="Share on LinkedIn" src="images/flat_web_icon_set/black/LinkedIn.png"></a></li>
+          <li><a href="mailto:?subject=Get%20any%20GitHub%20user's%20Email%20Address&body=:%20https%3A%2F%2Frecruit.now.sh%2F" target="_blank" title="Send email"><img alt="Send email" src="images/flat_web_icon_set/black/Email.png"></a></li>
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script>
+        var $button = $('button');
+        var $error = $('.error');
+        var $result = $('.result');
+        var $card = $('.card');
+
+        $('form').submit(function(e) {
+            e.preventDefault();
+            var userName = $('input').val();
+            if (!userName) {
+                return;
+            }
+            $button.addClass('is-loading');
+            $result.empty();
+            $card.removeClass('success');
+            $.getJSON('/api/email/' + userName)
+                .then(function(response) {
+                    $button.removeClass('is-loading');
+                    $('.name').text(response.name);
+                    $('.email-link')
+                        .text(response.email)
+                        .attr('href', 'mailto:' + response.email);
+                    $card.addClass('success');
+                }, function(response) {
+                    $button.removeClass('is-loading');
+                    $('.error').text(response.responseJSON.message || 'Something went wrong... please try again');
+                });
+        });
+    </script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-1591261-12', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
